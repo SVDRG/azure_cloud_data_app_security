@@ -47,8 +47,9 @@ resource "azurerm_linux_virtual_machine" "team61_vmweb" {
     public_key = file("id_rsa.pub")
   }
   user_data = base64encode(templatefile("install.sh", {
-    db_pswd = random_password.db_pswd.result 
-    db_host = azurerm_mysql_flexible_server.team61_mysql_server.fqdn
+    kv_name        = azurerm_key_vault.team61_kv.name
+    db_host        = azurerm_mysql_flexible_server.team61_mysql_server.fqdn
+    uami_client_id = azurerm_user_assigned_identity.appgw_id.client_id
   }))
   os_disk {
     caching              = "ReadWrite"
@@ -73,7 +74,7 @@ resource "azurerm_linux_virtual_machine" "team61_vmweb" {
   }
 
   identity {
-    type = "UserAssigned"
+    type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.appgw_id.id]
   }
 

@@ -6,7 +6,7 @@ data "azuread_group" "team61_group" {
 }
 
 resource "azurerm_key_vault" "team61_kv" {
-  name                        = "team61-kv-v3"
+  name                        = "team61-kv-v4"
   location                    = var.loc
   resource_group_name         = var.name
   enabled_for_disk_encryption = true

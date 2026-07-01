@@ -81,3 +81,33 @@ resource "azurerm_network_security_group" "team61_nsg_appgw" {
 
   depends_on = [azurerm_resource_group.team61_rg]
 }
+
+resource "azurerm_network_security_group" "team61_db_nsg" {
+  name                = "team61-db-nsg"
+  location            = var.loc
+  resource_group_name = var.name
+
+  security_rule {
+    name                       = "Allow-Web-Subnet-MySQL"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3306"
+    source_address_prefix      = azurerm_subnet.team61_web.address_prefixes[0] 
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Deny-Other-VNet-Traffic"
+    priority                   = 200
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "VirtualNetwork" 
+    destination_address_prefix = "*"
+  }
+}

@@ -1,34 +1,43 @@
 #! /bin/bash
 
-# 1. 시스템 및 네트워크 기본 설정
 setenforce 0
 grubby --update-kernel ALL --args selinux=0
 
-# 2. 필수 패키지 설치
 until dnf install -y wget httpd php php-gd php-mysqlnd php-curl php-opcache mod_ssl; do
     echo "dnf is locked by another process. Waiting 5 seconds..."
     sleep 5
 done
 
-# 3. 워드프레스 다운로드 및 설정
 wget https://ko.wordpress.org/wordpress-7.0-ko_KR.tar.gz
 tar zxvf wordpress-7.0-ko_KR.tar.gz
 cp -ar ./wordpress/* /var/www/html/
-cp /var/www/html/wp-config{-sample,}.php
+
+while [ ! -f /var/www/html/wp-config-sample.php ]; do
+    sleep 2
+done
+cp /var/
+www/html/wp-config-sample.php /var/www/html/wp-config.php
 sed -i "s/DirectoryIndex index.html/DirectoryIndex index.php/g" /etc/httpd/conf/httpd.conf
-sed -i "s|database_name_here|wordpress|g; s|username_here|team61|g; s|password_here|${db_pswd}|g; s|localhost|${db_host}|g" /var/www/html/wp-config.php
+
+TOKEN=$(curl -s "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net&client_id=${uami_client_id}" -H Metadata:true | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
+DB_PSWD=$(curl -s -H "Authorization: Bearer $TOKEN" "https://${kv_name}.vault.azure.net/secrets/db-pswd?api-version=7.0" | grep -o '"value":"[^"]*' | cut -d'"' -f4)
+
+sed -i 's/\r//g' /var/www/html/wp-config.php
+sed -i "s|database_name_here|wordpress|g" /var/www/html/wp-config.php
+sed -i "s|username_here|team61|g" /var/www/html/wp-config.php
+sed -i "s|localhost|${db_host}|g" /var/www/html/wp-config.php
+sed -i "s#password_here#$DB_PSWD#g" /var/www/html/wp-config.php
 sed -i "/That's all, stop editing/i define( 'MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL );" /var/www/html/wp-config.php
+
+chmod 400 /var/www/html/wp-config.php
+chown -R apache:apache /var/www/html/
 
 cat << 'EOF' > /var/www/html/api.php
 <?php
 $host     = '${db_host}';
 $db       = 'wordpress';
 $user     = 'team61';
-EOF
-
-echo "\$password = '${db_pswd}';" >> /var/www/html/api.php
-
-cat << 'EOF' >> /var/www/html/api.php
+$password = '$db_pswd';
 $charset  = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

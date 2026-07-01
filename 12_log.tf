@@ -1,5 +1,5 @@
 resource "azurerm_log_analytics_workspace" "team61_log" {
-  name                = "team61-log-v3"
+  name                = "team61-log-v4"
   location            = var.loc
   resource_group_name = var.name
   sku                 = "PerGB2018"

@@ -13,7 +13,7 @@ resource "azurerm_sentinel_log_analytics_workspace_onboarding" "team61_sentinel"
  */
 # 4. [Step 3] 탐지 규칙: KQL(Kusto Query Language)을 이용한 간단한 알람 룰 세팅
 resource "azurerm_sentinel_alert_rule_scheduled" "team61_alert_rule" {
-  name                       = "detect-suspicious-login-v3"
+  name                       = "detect-suspicious-login-v5"
   log_analytics_workspace_id = azurerm_log_analytics_workspace.team61_log.id
   display_name               = "비정상 로그인 시도 탐지"
   severity                   = "High"

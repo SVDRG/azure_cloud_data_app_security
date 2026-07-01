@@ -1,6 +1,6 @@
 # 1. 보안 스토리지 계정 생성
 resource "azurerm_storage_account" "team61_storage" {
-  name                     = "team61storagev3" 
+  name                     = "team61storagev4" 
   resource_group_name      = var.name
   location                 = var.loc
   account_tier             = "Standard"

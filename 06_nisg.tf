@@ -12,3 +12,8 @@ resource "azurerm_subnet_network_security_group_association" "team61_appgw_assoc
   subnet_id                 = azurerm_subnet.team61_appgw.id
   network_security_group_id = azurerm_network_security_group.team61_nsg_appgw.id
 }
+
+resource "azurerm_subnet_network_security_group_association" "team61_db_nsg_link" {
+  subnet_id                 = azurerm_subnet.team61_db.id
+  network_security_group_id = azurerm_network_security_group.team61_db_nsg.id
+}
