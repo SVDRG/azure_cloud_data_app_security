@@ -37,9 +37,9 @@ data "azurerm_storage_account_sas" "team61_sas" {
   connection_string = azurerm_storage_account.team61_storage.primary_connection_string
   https_only        = true
 
-  # 토큰 유효 기간 설정 (현재 시간부터 24시간 동안만 유효)
-  start  = "2026-06-26T00:00:00Z"
-  expiry = "2026-06-27T00:00:00Z"
+  #배포(apply) 시점 기준으로 현재 시간 ~ 24시간 뒤로 동적 생성
+  start  = timestamp()
+  expiry = timeadd(timestamp(), "24h")
 
   # 허용할 자원 유형 및 서비스 (Blob 파일 접근 허용)
   resource_types {
