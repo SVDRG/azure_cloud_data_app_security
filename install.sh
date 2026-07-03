@@ -11,6 +11,13 @@ done
 wget https://ko.wordpress.org/wordpress-7.0-ko_KR.tar.gz
 tar zxvf wordpress-7.0-ko_KR.tar.gz
 cp -ar ./wordpress/* /var/www/html/
+cat << 'EOF' >> /var/www/html/wp-content/themes/twentytwentyfive/functions.php
+// 로그인 에러 메시지 통합 (계정 열거 방지)
+function no_wordpress_errors(){
+  return '아이디 또는 비밀번호가 잘못되었습니다.';
+}
+add_filter( 'login_errors', 'no_wordpress_errors' );
+EOF
 
 while [ ! -f /var/www/html/wp-config-sample.php ]; do
     sleep 2
