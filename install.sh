@@ -15,8 +15,7 @@ cp -ar ./wordpress/* /var/www/html/
 while [ ! -f /var/www/html/wp-config-sample.php ]; do
     sleep 2
 done
-cp /var/
-www/html/wp-config-sample.php /var/www/html/wp-config.php
+cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
 sed -i "s/DirectoryIndex index.html/DirectoryIndex index.php/g" /etc/httpd/conf/httpd.conf
 
 TOKEN=$(curl -s "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fvault.azure.net&client_id=${uami_client_id}" -H Metadata:true | grep -o '"access_token":"[^"]*' | cut -d'"' -f4)
